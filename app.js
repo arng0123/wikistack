@@ -6,11 +6,13 @@ app.use(morgan ('dev'))
 app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({ extended: false }));
 
+const views = require('./views/index')
+
 app.get('/', (req,res) => {
   console.log('hello world')
 })
 
-let port = 1337
+let port = 3000
 app.listen(port, ()=>{
   console.log(`app listening in port ${port}`)
 })
