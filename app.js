@@ -3,16 +3,28 @@ const app = express()
 const morgan = require ('morgan')
 app.use(morgan ('dev'))
 // maybe need to change __dirname
-app.use(express.static(__dirname + "/public"));
+const { static } = require('express');
+app.use(express.static(__dirname + "/public/stylesheets"));
+
 app.use(express.urlencoded({ extended: false }));
 
-const views = require('./views/index')
+const {layout} = require('./views/index');
 
-app.get('/', (req,res) => {
-  console.log('hello world')
+const { db } = require('./models');
+
+db.authenticate().
+then(() => {
+  console.log('connected to the database');
 })
 
-let port = 3000
+app.get('/', (req,res, next) => {
+  console.log('hello world')
+  res.send(layout(''))
+  next()
+})
+
+const port = 3000
 app.listen(port, ()=>{
+  //res.send('hi')
   console.log(`app listening in port ${port}`)
 })
