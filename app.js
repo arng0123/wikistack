@@ -2,20 +2,24 @@ const express = require('express')
 const app = express()
 const morgan = require ('morgan')
 app.use(morgan ('dev'))
-// maybe need to change __dirname
+
 const { static } = require('express');
 app.use(express.static(__dirname + "/public/stylesheets"));
-
 app.use(express.urlencoded({ extended: false }));
 
 const {layout} = require('./views/index');
 
 const { db } = require('./models');
-
-db.authenticate().
-then(() => {
+db.authenticate().then(() => {
   console.log('connected to the database');
 })
+
+const userRouter = require('./routes/user')
+const wikiRouter = require ('./routes/wiki')
+app.use('/wiki', wikiRouter)
+app.use('/user', userRouter)
+
+
 
 app.get('/', (req,res, next) => {
   console.log('hello world')
@@ -24,7 +28,12 @@ app.get('/', (req,res, next) => {
 })
 
 const port = 3000
-app.listen(port, ()=>{
-  //res.send('hi')
-  console.log(`app listening in port ${port}`)
-})
+const init = async () => {
+  await db.sync()
+  // db.sync({force: true})
+  app.listen(port, ()=>{
+    console.log(`app listening in port ${port}`)
+  })
+}
+init()
+
